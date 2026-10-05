@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f3f0e8">
+<title>Handmade — ASL Learning Studio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#f3f0e8;--paper:#fbfaf6;--ink:#20252a;--muted:#74756f;
+  --line:#dedbd2;--dark:#252c31;--accent:#8d7950;--good:#54745d;
+  --bad:#a65a4b;--shadow:0 10px 30px rgba(31,35,38,.06);--radius:22px
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+button,input{font:inherit} button{cursor:pointer}
+.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:92px}
+.top{padding:17px 18px 8px;display:flex;align-items:center;justify-content:space-between}
+.brand{font-family:"DM Serif Display",serif;font-size:18px;font-style:italic}
+.xp{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:7px 10px;border-radius:99px;background:#fffdf8}
+.screen{display:none;padding:8px 16px 0}.screen.active{display:block}
+.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:9px;color:#77766e;margin-top:12px}
+h1{font-family:"DM Serif Display",serif;font-size:39px;line-height:.98;font-weight:400;margin:8px 0 12px;letter-spacing:-1px}
+h2{font-family:"DM Serif Display",serif;font-size:28px;font-weight:400;margin:8px 0}
+h3{font-family:"DM Serif Display",serif;font-size:18px;font-weight:400;margin:0 0 6px}
+p{font-size:12px;line-height:1.55;color:var(--muted);margin:6px 0}
+.hero-actions{display:flex;gap:8px;margin:17px 0 15px}.btn{border:0;border-radius:11px;padding:11px 13px;font-size:11px;font-weight:600}
+.btn.dark{background:var(--dark);color:#f8f5ec}.btn.light{background:#fffdf8;border:1px solid var(--line);color:var(--ink)}
+.hand-card{height:260px;background:var(--paper);border:1px solid var(--line);border-radius:22px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.hand{width:180px;height:210px}.caption{position:absolute;bottom:17px;text-align:center}.caption b{display:block;font-family:"DM Serif Display",serif;font-style:italic;font-size:15px}.caption small{font-size:8px;color:var(--muted)}
+.cards{display:grid;gap:8px;margin-top:10px}.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:var(--shadow)}
+.cardhead{display:flex;align-items:center;gap:9px}.icon{width:25px;height:25px;border:1px solid var(--line);border-radius:8px;display:grid;place-items:center}.icon svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.7}
+.card .open{font-size:10px;color:var(--ink);margin-top:10px;display:block}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.letter{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 4px;text-align:center}.letter strong{font-family:"DM Serif Display",serif;font-size:25px;font-weight:400}.letter small{display:block;color:var(--muted);font-size:8px;margin-top:3px}
+.letter-study-layout{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center}
+.letter-hand-wrap{height:185px;background:linear-gradient(145deg,#fffdf8,#eee9dc);border:1px solid var(--line);border-radius:18px;display:grid;place-items:center;overflow:hidden}
+.letter-hand-wrap svg{width:138px;height:170px;filter:drop-shadow(0 8px 8px rgba(30,35,38,.08))}
+.letter-big{font-family:"DM Serif Display",serif;font-size:48px;line-height:1}
+.letter-name{font-size:10px;font-weight:700;margin-top:2px}
+.finger-guide{display:flex;flex-wrap:wrap;gap:5px;margin:9px 0}
+.finger-guide span{font-size:8px;border:1px solid var(--line);background:#fffdf8;border-radius:99px;padding:5px 7px}
+.word.practice-active{border-color:var(--ink);box-shadow:0 5px 16px rgba(32,37,38,.08)}
+.word-visual{display:none;grid-column:1/-1;margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}
+.word.practice-active .word-visual{display:block}
+.builder-search{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fffdf8;font-size:10px;outline:none}
+.builder-meta{display:flex;justify-content:space-between;gap:8px;margin-top:7px}
+.builder-meta small{font-size:8px;color:var(--muted)}
+.builder-scroll{max-height:185px;overflow:auto;padding:2px}
+.word-visual-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:7px}
+.word-letter{background:var(--bg);border:1px solid var(--line);border-radius:9px;text-align:center;padding:7px 2px}
+.word-letter b{font-family:"DM Serif Display",serif;font-size:18px;font-weight:400}
+.word-letter small{display:block;font-size:7px;color:var(--muted);margin-top:2px}
+.word-action{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+@media(max-width:380px){.letter-study-layout{grid-template-columns:125px 1fr}.letter-hand-wrap{height:165px}.letter-hand-wrap svg{width:120px;height:150px}}
+.progress{height:7px;background:#e2dfd5;border-radius:99px;overflow:hidden;margin:8px 0}.progress i{display:block;height:100%;width:0;background:var(--ink);border-radius:99px}
+.tabs{display:flex;gap:6px;background:#e7e3da;padding:4px;border-radius:12px;margin:12px 0}.tabs button{flex:1;border:0;background:transparent;padding:9px;border-radius:9px;font-size:10px;color:var(--muted)}.tabs button.sel{background:#fffdf8;color:var(--ink);box-shadow:0 2px 8px #0000000b}
+.question{font-family:"DM Serif Display",serif;font-size:25px;line-height:1.1;margin:18px 0}.answers{display:grid;gap:8px}.answer{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:13px;text-align:left;font-size:11px}.answer.correct{border-color:var(--good)}.answer.wrong{border-color:var(--bad)}
+.situation-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.place{min-height:115px;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px;position:relative}.place .place-icon{font-size:0;width:35px;height:35px;border:1px solid var(--line);border-radius:11px;margin-bottom:14px;display:grid;place-items:center}.place .place-icon svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:1.5}.place b{font-family:"DM Serif Display",serif;font-size:18px;font-weight:400}.place span{display:block;color:var(--muted);font-size:9px;margin-top:4px}
+.word-list{display:grid;gap:7px;margin-top:12px}.word{display:flex;align-items:center;justify-content:space-between;background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:12px}.word b{font-size:12px}.word small{color:var(--muted);font-size:9px}.mini{border:1px solid var(--line);background:transparent;border-radius:9px;padding:6px 8px;font-size:9px}
+.ai{background:var(--dark);color:#f5f1e7;border-radius:22px;padding:17px;margin-top:13px}.ai p{color:#c8c5bb}.ai .label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#b9aa8c}.chat{margin-top:10px;display:grid;gap:7px}.bubble{padding:10px 11px;border-radius:13px;font-size:11px;line-height:1.45}.bubble.bot{background:#353d42}.bubble.user{background:#eee9dc;color:var(--ink);justify-self:end;max-width:85%}.ask{display:flex;gap:6px;margin-top:10px}.ask input{min-width:0;flex:1;border:1px solid #4b5357;background:#30383d;color:white;border-radius:10px;padding:10px;font-size:10px}.ask button{border:0;border-radius:10px;padding:0 12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.stat{background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:13px}.stat b{font-family:"DM Serif Display",serif;font-size:25px;font-weight:400}.stat small{display:block;color:var(--muted);font-size:8px;margin-top:3px}
+.bottom{position:fixed;z-index:20;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#f8f6efed;backdrop-filter:blur(16px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom))}
+.nav{border:0;background:transparent;color:#8a8982;font-size:8px;padding:6px 2px;border-radius:12px}.nav svg{width:17px;height:17px;display:block;margin:0 auto 4px;stroke:currentColor;fill:none;stroke-width:1.6}.nav.active{color:var(--ink);background:#fffdf8}
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:90px;background:var(--dark);color:white;border-radius:99px;padding:9px 14px;font-size:10px;opacity:0;transition:.25s;z-index:50}.toast.show{opacity:1;transform:translateX(-50%)}
+.hide{display:none!important}
+@media(min-width:700px){body{padding:20px}.app{border:1px solid var(--line);border-radius:28px;background:var(--bg);overflow:hidden}.bottom{border-radius:0 0 28px 28px}}
+
+/* --- Sentence Lab / upgraded learning UI --- */
+.sentence-card{position:relative;overflow:hidden}
+.sentence-card:before{content:"";position:absolute;right:-35px;top:-45px;width:110px;height:110px;border:1px solid var(--line);border-radius:50%}
+.sentence-tools{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.sentence-practice{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:13px}
+.sentence-practice.open{display:block;animation:rise .2s ease}
+@keyframes rise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.sign-sequence{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}
+.sign-tile{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:9px;text-align:center;transition:.2s}
+.sign-tile.playing{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 8px 18px rgba(32,37,42,.1)}
+.sign-art{height:72px;display:grid;place-items:center}
+.sign-art svg{width:68px;height:68px}
+.sign-word{font-size:10px;font-weight:700}.sign-cue{font-size:8px;color:var(--muted);margin-top:2px}
+.practice-actions{display:flex;gap:6px;flex-wrap:wrap}
+.speed{display:flex;align-items:center;gap:7px;font-size:9px;color:var(--muted);margin:8px 0}
+.speed input{flex:1}
+.sentence-complete{margin-top:8px;padding:9px 10px;border-radius:10px;background:#e9eee8;color:var(--good);font-size:9px;display:none}
+.sentence-complete.show{display:block}
+.builder{display:grid;gap:8px;margin-top:10px}
+.builder-row{display:flex;gap:6px;flex-wrap:wrap}
+.word-chip{border:1px solid var(--line);background:var(--paper);border-radius:99px;padding:8px 10px;font-size:9px}
+.word-chip.selected{background:var(--ink);color:var(--bg)}
+.mission{background:var(--dark);color:#f6f1e6;border-radius:20px;padding:16px;margin-top:10px}
+.mission p{color:#c8c4b8}.mission .progress{background:#41484c}.mission .progress i{background:#f6f1e6}
+.badge-row{display:flex;gap:7px;overflow:auto;margin-top:10px}.badge{min-width:92px;border:1px solid var(--line);background:var(--paper);border-radius:13px;padding:10px}.badge b{font-family:"DM Serif Display",serif;font-size:14px}.badge small{display:block;font-size:8px;color:var(--muted);margin-top:3px}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand">Handmade</div><div class="xp" id="xp">0 XP</div></header>
+
+<section id="home" class="screen active">
+<div class="eyebrow">American Sign Language</div><h1>A studio for<br>your hands.</h1>
+<p>Learn the ASL alphabet, practice everyday phrases, and build real-world signing skills — not English with fingers.</p>
+<div class="hero-actions"><button class="btn dark" onclick="go('letters')">Start with the alphabet →</button><button class="btn light" onclick="go('situations')">Browse places</button></div>
+<div class="hand-card">
+<svg class="hand" viewBox="0 0 180 210" aria-label="I love you handshape">
+<g fill="#d8c8aa" stroke="#20252a" stroke-width="2.2" stroke-linejoin="round">
+<rect x="59" y="70" width="66" height="108" rx="31"/><rect x="54" y="31" width="15" height="70" rx="8" transform="rotate(-9 61 65)"/><rect x="112" y="19" width="15" height="86" rx="8" transform="rotate(8 119 62)"/><rect x="87" y="42" width="16" height="74" rx="8" transform="rotate(12 95 79)"/><rect x="106" y="68" width="16" height="57" rx="8" transform="rotate(35 114 96)"/><path d="M67 92 Q84 77 101 92 Q108 99 106 112 Q93 101 78 112 Q68 110 67 92Z"/>
+</g><g stroke="#8c806d" stroke-width="1.3" fill="none"><path d="M65 38l5 25M119 26l-4 27M94 49l-2 32M113 75l-9 26"/></g>
+</svg><div class="caption"><b>I love you</b><small>I-L-Y · thumb, index, pinky</small></div>
+</div>
+<div class="cards">
+<div class="card" onclick="go('letters')"><div class="cardhead"><span class="icon">⌘</span><h3>Letters</h3></div><p>Learn 26 handshapes, animated. Learn how each one is formed — and the mistakes that turn it into a different letter.</p><span class="open">Open →</span></div>
+<div class="card" onclick="go('practice')"><div class="cardhead"><span class="icon">◉</span><h3>Practice</h3></div><p>Quiz yourself, spell short words, or hold a hand up to the camera. Progress shows on this device.</p><span class="open">Open →</span></div>
+<div class="card" onclick="go('tutor')"><div class="cardhead"><span class="icon">◌</span><h3>AI Tutor</h3></div><p>Ask how a sign moves, why the face matters, or turn a short English phrase into ASL class practice.</p><span class="open">Open →</span></div>
+</div>
+<div class="card" style="margin-top:10px"><div class="eyebrow">Your learning path</div><h3 id="homeGoal">Start your first 5 signs</h3><div class="progress"><i id="homeBar"></i></div><p id="homeProgress">0 of 5 lessons completed</p></div>
+</section>
+
+<section id="letters" class="screen">
+<div class="eyebrow">Manual alphabet</div><h2>26 letters, one hand.</h2><p>Tap a letter to study it. Use fingerspelling for names and words.</p>
+<div class="grid" id="lettersGrid"></div>
+<div class="card letter-study" style="margin-top:10px">
+<div class="eyebrow">Selected handshape</div>
+<div class="letter-study-layout">
+<div class="letter-hand-wrap" id="letterHand"></div>
+<div>
+<div class="letter-big" id="selectedLetter">A</div>
+<div class="letter-name" id="letterName">A handshape</div>
+<p id="letterNote">Make the handshape carefully. Keep the thumb placement clear and consistent.</p>
+<div class="finger-guide" id="fingerGuide"></div>
+<button class="btn dark" onclick="completeLesson()">Mark as learned +10 XP</button>
+</div>
+</div>
+</div>
+</section>
+
+<section id="practice" class="screen">
+<div class="eyebrow">Practice lab</div><h2>Make it stick.</h2>
+<div class="tabs"><button id="quizTab" class="sel" onclick="practiceTab('quiz')">Quiz</button><button id="spellTab" onclick="practiceTab('spell')">Fingerspell</button></div>
+<div id="quizBox"><div class="card"><div class="eyebrow">Question</div><div class="question" id="question">Which letter comes after C?</div><div class="answers" id="answers"></div></div></div>
+<div id="spellBox" class="hide"><div class="card"><div class="eyebrow">Animated fingerspelling</div><h2 id="spellText">HELLO</h2><p>Type a short word and watch each letter appear.</p><input id="spellInput" value="HELLO" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:11px;background:#fffdf8"><div class="grid" id="spellGrid"></div><button class="btn dark" onclick="spell()">Animate →</button></div></div>
+</section>
+
+<section id="situations" class="screen">
+<div class="eyebrow">Words by place</div><h2>Sign for real life.</h2><p>Learn the words you are most likely to need in each situation.</p>
+<div class="situation-row" id="places"></div>
+<div id="placeDetail" class="card" style="margin-top:10px"><div class="eyebrow">Choose a place</div><h3>Hospital</h3><p>Pick a place above to see its essential signs.</p></div>
+</section>
+
+<section id="sentences" class="screen">
+<div class="eyebrow">Sentence studio</div>
+<h2>From words to meaning.</h2>
+<p>Choose a sentence, reveal its ASL practice sequence, study each hand cue, then play the whole sentence.</p>
+
+<div class="card mission">
+<div class="eyebrow" style="color:#b9aa8c">TODAY'S SENTENCE MISSION</div>
+<h3 style="color:#f6f1e6">Complete 1 sentence practice</h3>
+<p id="sentenceMissionText">Choose any sentence below and finish its hand-sequence drill.</p>
+<div class="progress"><i id="sentenceMissionBar"></i></div>
+</div>
+
+<div class="cards" id="sentenceList"></div>
+
+<div class="card" style="margin-top:10px">
+<div class="eyebrow">BUILD YOUR OWN</div>
+<h3>Sentence builder</h3>
+<p>Tap words to build a simple practice sentence. Then play the hand-cue sequence.</p>
+<div class="builder">
+<input class="builder-search" id="builderSearch" placeholder="Search the word bank…" oninput="renderBuilderWords()">
+<div class="builder-meta"><small id="builderCount">Word bank</small><small>Tap any word to add it</small></div>
+<div class="builder-scroll"><div class="builder-row" id="builderWords"></div></div>
+<div class="card" style="margin:0;background:var(--bg)">
+<div class="eyebrow">YOUR SENTENCE</div>
+<h3 id="builtSentence">I WANT WATER</h3>
+<div class="sign-sequence" id="builderSequence"></div>
+<div class="practice-actions">
+<button class="btn dark" onclick="playBuilder()">Play signs →</button>
+<button class="btn light" onclick="speakBuilt()">🔊 Read English</button>
+<button class="btn light" onclick="clearBuilder()">Clear</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="tutor" class="screen">
+<div class="eyebrow">Handmade intelligence</div><h2>Your private ASL coach.</h2><p>Ask a question, request a practice drill, or describe a situation. This offline demo gives coaching guidance without sending your message anywhere.</p>
+<div class="ai"><div class="label">AI Coach · offline</div><div class="chat" id="chat"><div class="bubble bot">Hi. I can help you practise alphabet, vocabulary, sentences, facial expression and learning strategy. What would you like to work on?</div></div><div class="ask"><input id="askInput" placeholder="Ask: How do I practise HELLO?"><button class="btn light" onclick="startCoachVoice()">🎙</button><button class="btn light" onclick="askAI()">Ask</button></div></div>
+<div class="cards"><div class="card"><h3>Practice smarter</h3><p>Short daily sessions beat long sessions once a week. Review mistakes immediately, then test yourself again later.</p></div><div class="card"><h3>Important</h3><p>This learning studio is educational practice software. ASL is a complete language; for accurate production and cultural context, learn with Deaf teachers and qualified ASL resources.</p></div></div>
+</section>
+
+<section id="progress" class="screen">
+<div class="eyebrow">Your studio</div><h2>Progress, quietly measured.</h2><div class="stats"><div class="stat"><b id="xp2">0</b><small>XP earned</small></div><div class="stat"><b id="learned">0</b><small>lessons</small></div><div class="stat"><b id="streak">1</b><small>day streak</small></div></div>
+<div class="card"><h3>Today</h3><p id="today">Your goal is simple: learn one new sign.</p><div class="progress"><i id="progressBar"></i></div><button class="btn dark" onclick="go('practice')">Continue practice →</button></div>
+<div class="card" style="margin-top:9px"><h3>Achievements</h3><p id="badges">○ First sign · ○ 5 signs · ○ 10 signs · ○ Practice streak</p></div>
+</section>
+
+<nav class="bottom">
+<button class="nav active" data-go="home" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5V20H4z"/><path d="M9 20v-5h6v5"/></svg>Studio</button>
+<button class="nav" data-go="letters" onclick="go('letters')"><svg viewBox="0 0 24 24"><path d="M5 19V5h14v14z"/><path d="M8 15l3-6 3 6M9 13h4"/></svg>Letters</button>
+<button class="nav" data-go="practice" onclick="go('practice')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m9 12 2 2 4-5"/></svg>Practice</button>
+<button class="nav" data-go="sentences" onclick="go('sentences')"><svg viewBox="0 0 24 24"><path d="M5 6h14v10H9l-4 3z"/><path d="M8 10h8M8 13h5"/></svg>Sentences</button>
+<button class="nav" data-go="tutor" onclick="go('tutor')"><svg viewBox="0 0 24 24"><path d="M12 3a8 8 0 0 0-8 8c0 2 1 4 2.5 5.3L6 20l4-2c.7.2 1.3.3 2 .3a8 8 0 1 0 0-15.3z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg>Tutor</button>
+</nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const letters=[..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+const notes={A:"Closed fingers with thumb resting in front. Keep the thumb placement visible.",B:"Four fingers extend together while the thumb rests across the palm.",C:"Curve the fingers and thumb into a clear C shape.",D:"Index points up while the other fingers and thumb form a rounded base.",E:"Curl the fingers down toward the thumb with a compact handshape.",F:"Thumb and index touch to form a small circle; other fingers extend.",G:"Index and thumb extend forward while the remaining fingers stay closed.",H:"Index and middle extend together horizontally; remaining fingers close.",I:"Pinky extends while the other fingers stay closed and thumb crosses the palm.",J:"Begin with I, then trace a small J movement in the air.",K:"Index and middle open in a V while the thumb contacts between them.",L:"Index points up and thumb points sideways, making an L.",M:"Three fingers fold over the thumb inside the palm.",N:"Two fingers fold over the thumb inside the palm.",O:"Fingers curve together with the thumb to make a rounded O.",P:"Like K with the hand oriented downward.",Q:"Like G with the hand oriented downward.",R:"Index and middle cross while the remaining fingers close.",S:"Fingers curl over the thumb into a firm fist.",T:"Thumb tucks between the index and middle fingers.",U:"Index and middle extend together; other fingers remain closed.",V:"Index and middle separate into a V.",W:"Index, middle and ring fingers extend together.",X:"Index bends like a hook while the other fingers close.",Y:"Thumb and pinky extend while middle fingers stay closed.",Z:"Index traces a Z shape in the air."};
+
+const places={Hospital:["doctor","nurse","pain","medicine","help","emergency"],School:["teacher","student","book","learn","question","class"],Playground:["play","friend","run","ball","happy","stop"],Home:["home","family","eat","sleep","water","bathroom"],Shopping:["shop","buy","price","money","size","help"],Restaurant:["food","drink","menu","more","please","thank you"],Travel:["airport","ticket","hotel","where","train","help"],Emergency:["help","police","danger","fire","call","hospital"]};
+
+const sentenceData=[
+ {en:"The dog is playing.",words:["DOG","PLAY","NOW"],cue:"DOG · PLAY · NOW",tip:"Keep this as a meaning-first practice sentence. Use a natural facial expression and smooth transitions."},
+ {en:"The cat is playing.",words:["CAT","PLAY","NOW"],cue:"CAT · PLAY · NOW",tip:"Practise the animal topic first, then the action. Do not rush the handshapes."},
+ {en:"I want water.",words:["I","WANT","WATER"],cue:"I · WANT · WATER",tip:"Start slowly. Make each key sign clear before increasing your speed."},
+ {en:"Where is the hospital?",words:["HOSPITAL","WHERE"],cue:"HOSPITAL · WHERE",tip:"Use an appropriate question expression and hold the final question naturally."},
+ {en:"I need help.",words:["I","NEED","HELP"],cue:"I · NEED · HELP",tip:"Practise it as one message. Keep your movement confident and your face engaged."},
+ {en:"Thank you for helping me.",words:["THANK-YOU","HELP","ME"],cue:"THANK-YOU · HELP · ME",tip:"Focus on the whole meaning. English and ASL do not map word-for-word."}
+];
+
+const handIcons={
+"I":"☝︎","DOG":"🐕","CAT":"🐈","PLAY":"✋","NOW":"👇","WANT":"🤲","WATER":"💧","HOSPITAL":"✚","WHERE":"❓","NEED":"🤝","HELP":"🫶","THANK-YOU":"🙏","ME":"👤"
+};
+
+let sentenceDone=JSON.parse(localStorage.getItem("handmadeSentenceDone")||"[]");
+let builder=["I","WANT","WATER"];
+let sentenceTimer=null;
+
+let state=JSON.parse(localStorage.getItem("handmadeState")||'{"xp":0,"learned":[],"streak":1}');
+function save(){localStorage.setItem("handmadeState",JSON.stringify(state));updateUI()}
+function toast(t){let x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1800)}
+function go(id){document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===id));document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("active",x.dataset.go===id));window.scrollTo({top:0,behavior:"smooth"});if(id==="progress")updateUI()}
+function updateUI(){document.getElementById("xp").textContent=state.xp+" XP";document.getElementById("xp2").textContent=state.xp;document.getElementById("learned").textContent=state.learned.length;let pct=Math.min(100,state.learned.length/10*100);document.querySelectorAll("#homeBar,#progressBar").forEach(x=>x.style.width=pct+"%");document.getElementById("homeProgress").textContent=state.learned.length+" signs learned · "+sentenceDone.length+" sentences completed";document.getElementById("streak").textContent=state.streak;document.getElementById("badges").textContent=(state.learned.length>=1?"✓":"○")+" First sign · "+(state.learned.length>=5?"✓":"○")+" 5 signs · "+(state.learned.length>=10?"✓":"○")+" 10 signs · "+(state.streak>=3?"✓":"○")+" Practice streak"}
+
+const handMeta={
+A:["Fingers closed","Thumb across front","Palm forward"],B:["Four fingers up","Thumb across palm","Fingers together"],C:["Fingers curved","Thumb curved","Open C shape"],D:["Index up","Other fingers curled","Thumb touches middle"],E:["Fingers curled","Thumb tucked","Compact fist"],F:["Index + thumb circle","Three fingers up","Palm forward"],G:["Index forward","Thumb parallel","Other fingers closed"],H:["Index + middle forward","Together","Other fingers closed"],I:["Pinky up","Other fingers closed","Thumb across"],J:["Pinky up","Trace J","Smooth movement"],K:["Index + middle up","Thumb between","V opening"],L:["Index up","Thumb sideways","Clear L"],M:["Three fingers over thumb","Thumb inside","Closed hand"],N:["Two fingers over thumb","Thumb inside","Closed hand"],O:["All fingers curved","Thumb joins","Round opening"],P:["K handshape","Point downward","Rotate wrist"],Q:["G handshape","Point downward","Rotate wrist"],R:["Index + middle crossed","Other fingers closed","Relax crossing"],S:["Fist","Thumb across","Closed fingers"],T:["Thumb between index/middle","Other fingers closed","Compact hand"],U:["Index + middle up","Together","Other fingers closed"],V:["Index + middle up","Separated","V opening"],W:["Three fingers up","Spread naturally","Other fingers closed"],X:["Index hooked","Other fingers closed","Hook shape"],Y:["Thumb + pinky out","Middle fingers closed","Relaxed Y"],Z:["Index extended","Trace Z","Finish clearly"]};
+
+const handShapes={
+A:[0,0,0,0,0],B:[1,1,1,1,0],C:[2,2,2,2,2],D:[1,0,0,0,2],E:[3,3,3,3,3],
+F:[1,1,1,1,0],G:[4,0,0,0,0],H:[4,4,0,0,0],I:[0,0,0,0,4],J:[0,0,0,0,4],
+K:[1,1,0,0,0],L:[4,0,0,0,0],M:[3,3,3,0,0],N:[3,3,0,0,0],O:[2,2,2,2,2],
+P:[1,1,0,0,0],Q:[4,0,0,0,0],R:[5,5,0,0,0],S:[3,3,3,3,3],T:[3,3,0,0,0],
+U:[4,4,0,0,0],V:[4,6,0,0,0],W:[4,6,4,0,0],X:[7,0,0,0,0],Y:[0,0,0,0,4],Z:[4,0,0,0,0]
+};
+
+function fingerShape(i,state){
+const x=[57,76,95,114,133][i], top=[35,25,30,38,54][i], h=[64,75,69,60,45][i];
+if(state===0)return `<path d="M${x-7} ${top+h}Q${x} ${top+h+6} ${x+7} ${top+h}L${x+6} ${top+12}Q${x} ${top+5} ${x-6} ${top+12}Z"/>`;
+if(state===1)return `<rect x="${x-7}" y="${top}" width="14" height="${h}" rx="7"/>`;
+if(state===2)return `<path d="M${x-7} ${top+h}Q${x-11} ${top+h/2} ${x-3} ${top+4}Q${x+7} ${top-2} ${x+8} ${top+10}L${x+7} ${top+h-3}Q${x} ${top+h+7} ${x-7} ${top+h}Z"/>`;
+if(state===3)return `<path d="M${x-7} ${top+18}Q${x} ${top+2} ${x+7} ${top+18}L${x+7} ${top+h}Q${x} ${top+h+7} ${x-7} ${top+h}Z"/>`;
+if(state===4)return `<rect x="${x-7}" y="${top}" width="14" height="${h}" rx="7"/>`;
+if(state===5)return `<path d="M${x-6} ${top+h}L${x-6} ${top+22}Q${x} ${top+5} ${x+7} ${top+22}L${x+7} ${top+h}Z"/>`;
+if(state===6)return `<rect x="${x-7}" y="${top}" width="14" height="${h}" rx="7" transform="rotate(16 ${x} ${top+h/2})"/>`;
+return `<path d="M${x-7} ${top+22}Q${x} ${top+5} ${x+7} ${top+22}L${x+5} ${top+h}Q${x} ${top+h+6} ${x-5} ${top+h}Z"/>`;
+}
+
+function handSVG(letter){
+const f=handShapes[letter]||handShapes.A;
+const fingers=f.map((s,i)=>fingerShape(i,s)).join("");
+let thumb=`<path d="M48 112Q40 98 47 87Q53 79 62 87L77 105Q80 115 71 121Q57 123 48 112Z"/>`;
+if(["L","G","H","Q","Y"].includes(letter))thumb=`<path d="M52 105Q31 94 34 78Q36 68 45 71L68 91Q72 98 67 106Z"/>`;
+if(letter==="F")thumb=`<path d="M48 91Q37 78 48 69Q57 63 67 73L78 86Q80 96 71 101Q61 105 54 97Z"/>`;
+if(["V","U","K","R","P"].includes(letter))thumb=`<path d="M50 106Q42 91 49 80Q55 72 63 80L78 98Q81 108 72 114Q59 117 50 106Z"/>`;
+const motion=letter==="J"
+? `<path d="M145 62Q157 76 150 98Q143 119 151 132" fill="none" stroke="#8d7950" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 5"/>`
+: letter==="Z"
+? `<path d="M48 58H130L48 132H132" fill="none" stroke="#8d7950" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 5"/>`:"";
+const rot=(letter==="P"||letter==="Q")?180:0;
+return `<svg viewBox="0 0 180 180" aria-label="Illustrated ASL ${letter} handshape">
+<defs><linearGradient id="skin${letter}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ead8b9"/><stop offset="1" stop-color="#c9ab7d"/></linearGradient></defs>
+<g transform="rotate(${rot} 90 95)" fill="url(#skin${letter})" stroke="#20252a" stroke-width="2.1" stroke-linejoin="round">
+<path d="M50 103Q47 87 55 77Q66 68 81 74Q96 64 113 75Q130 72 140 89L137 137Q134 157 111 164L72 164Q53 153 50 135Z"/>
+${fingers}${thumb}
+<path d="M61 113Q89 101 124 113" fill="none" stroke="#927e62" stroke-width="1.3"/>
+<path d="M69 136Q91 127 116 137" fill="none" stroke="#927e62" stroke-width="1.3"/>
+</g>${motion}
+</svg>`;
+}
+
+function renderLetterHand(l){
+document.getElementById("letterHand").innerHTML=handSVG(l);
+document.getElementById("selectedLetter").textContent=l;
+document.getElementById("letterName").textContent=l+" handshape";
+document.getElementById("letterNote").textContent=notes[l];
+document.getElementById("fingerGuide").innerHTML=(handMeta[l]||[]).map(x=>`<span>${x}</span>`).join("");
+}
+
+document.getElementById("lettersGrid").innerHTML=letters.map(l=>`<button class="letter" onclick="selectLetter('${l}')"><strong>${l}</strong><small>${state.learned.includes(l)?"Learned":"Study"}</small></button>`).join("");
+function selectLetter(l){renderLetterHand(l);if(!state.learned.includes(l))toast("Study "+l+" carefully")}
+
+function completeLesson(){let l=document.getElementById("selectedLetter").textContent;if(!state.learned.includes(l)){state.learned.push(l);state.xp+=10;save();toast(l+" learned · +10 XP")}else toast("Already learned")}
+
+let qIndex=0;
+const questions=[
+["Which letter comes after C?",["A","B","D","F"],"D"],
+["Which letter has a V handshape?",["U","V","R","W"],"V"],
+["Which letter uses thumb + index to make an O?",["F","L","M","F"],"F"],
+["Which letter is represented by thumb + pinky extended?",["Y","I","L","S"],"Y"]
+];
+
+function renderQuiz(){let q=questions[qIndex%questions.length];document.getElementById("question").textContent=q[0];document.getElementById("answers").innerHTML=q[1].map(a=>`<button class="answer" onclick="answer(this,'${a}','${q[2]}')">${a}</button>`).join("")}
+
+function answer(el,a,c){document.querySelectorAll(".answer").forEach(x=>x.disabled=true);if(a===c){el.classList.add("correct");state.xp+=5;save();toast("Correct · +5 XP")}else{el.classList.add("wrong");toast("Good try — review and try again")}setTimeout(()=>{qIndex++;renderQuiz()},800)}
+
+function practiceTab(t){document.getElementById("quizBox").classList.toggle("hide",t!=="quiz");document.getElementById("spellBox").classList.toggle("hide",t!=="spell");document.getElementById("quizTab").classList.toggle("sel",t==="quiz");document.getElementById("spellTab").classList.toggle("sel",t==="spell")}
+
+function spell(){let s=document.getElementById("spellInput").value.toUpperCase().replace(/[^A-Z]/g,"").slice(0,12);document.getElementById("spellText").textContent=s||"—";document.getElementById("spellGrid").innerHTML=[...s].map((l,i)=>`<div class="letter" style="animation:fade .3s ${i*.12}s both"><strong>${l}</strong><small>sign ${i+1}</small></div>`).join("");state.xp+=Math.min(10,s.length);save();toast("Fingerspelling practice saved")}
+
+document.getElementById("places").innerHTML=Object.keys(places).map((p,i)=>`<button class="place" onclick="showPlace('${p}')"><div class="place-icon">${["⌂","□","◇","○","△","≋","↗","!"][i]}</div><b>${p}</b><span>${places[p].length} essential signs</span></button>`).join("");
+
+function wordLetters(word){return word.toUpperCase().replace(/[^A-Z]/g,"").split("").map((l,i)=>`<div class="word-letter"><b>${l}</b><small>${i+1}</small></div>`).join("")}
+
+function practiceWord(p,w,el){
+const row=el.closest(".word");
+document.querySelectorAll(".word.practice-active").forEach(x=>{if(x!==row)x.classList.remove("practice-active")});
+row.classList.toggle("practice-active");
+const visual=row.querySelector(".word-visual");
+if(visual && !visual.innerHTML.trim()){
+visual.innerHTML=`<div class="eyebrow">FINGERSPELLING SUPPORT</div>
+<div style="display:grid;grid-template-columns:95px 1fr;gap:9px;align-items:center">
+<div style="height:105px;background:#fffdf8;border:1px solid var(--line);border-radius:13px;display:grid;place-items:center">${handSVG(w[0]||"A")}</div>
+<div><b style="font-family:'DM Serif Display',serif;font-size:22px">${w.toUpperCase()}</b><p>Review the word one letter at a time. This is a fingerspelling aid, not a replacement for learning the lexical ASL sign.</p></div>
+</div>
+<div class="word-visual-grid">${wordLetters(w)}</div>
+<div class="word-action"><button class="btn dark" onclick="animateWord('${w}',this)">▶ Play letters</button><button class="btn light" onclick='speakText(${JSON.stringify(w)})'>🔊 Hear word</button></div>
+<div class="progress"><i class="word-progress"></i></div>`;
+}}
+
+function animateWord(word,btn){
+const row=btn.closest(".word"), letters=[...row.querySelectorAll(".word-letter")], progress=row.querySelector(".word-progress");
+let i=0; clearInterval(sentenceTimer);
+const tick=()=>{letters.forEach(x=>x.style.outline="none");if(i>=letters.length){clearInterval(sentenceTimer);progress.style.width="100%";return}letters[i].style.outline="2px solid var(--ink)";progress.style.width=((i+1)/letters.length*100)+"%";i++};
+tick(); sentenceTimer=setInterval(tick,650);
+}
+
+function showPlace(p){document.getElementById("placeDetail").innerHTML=`<div class="eyebrow">${p}</div><h3>Essential vocabulary</h3><p>Tap <b>Practice</b> on any word to open its working practice panel.</p><div class="word-list">${places[p].map(w=>`<div class="word"><div><b>${w}</b><small> · essential word</small></div><button class="mini" onclick="practiceWord('${p}','${w}',this)">Practice</button><div class="word-visual"></div></div>`).join("")}</div>`}
+
+function renderSentences(){
+document.getElementById("sentenceList").innerHTML=sentenceData.map((s,i)=>`
+<div class="card sentence-card">
+<div class="eyebrow">Beginner sentence ${i+1}</div>
+<h3>${s.en}</h3>
+<p><b>${s.cue}</b></p>
+<p>${s.tip}</p>
+<div class="sentence-tools">
+<button class="btn dark" onclick="toggleSentence(${i})">${sentenceDone.includes(i)?"Review hand signs":"Practice sentence →"}</button>
+<button class="btn light" onclick="speakText(${JSON.stringify(s.en)})">🔊 Listen</button>
+</div>
+<div class="sentence-practice" id="sp-${i}">
+<div class="eyebrow">HAND-BY-HAND PRACTICE</div>
+<p>Each card now has a visual hand/meaning cue and a play sequence. These cues are memory aids; learn the exact ASL movement from a qualified Deaf/ASL resource.</p>
+<div class="sign-sequence" id="seq-${i}">${s.words.map(signTile).join("")}</div>
+<div class="speed">Speed <input id="speed-${i}" type="range" min="250" max="1200" step="50" value="650"><span>slow ↔ fast</span></div>
+<div class="practice-actions">
+<button class="btn dark" onclick="playSentence(${i})">▶ Play sequence</button>
+<button class="btn light" onclick="practiceOne(${i},0)">Start from first sign</button>
+<button class="btn light" onclick="markSentence(${i})">✓ Mark complete</button>
+</div>
+<div class="sentence-complete ${sentenceDone.includes(i)?"show":""}" id="done-${i}">Sentence practice complete · +15 XP</div>
+</div>
+</div>`).join("");
+}
+
+function toggleSentence(i){document.getElementById("sp-"+i).classList.toggle("open")}
+
+function practiceOne(i,start){
+const tiles=[...document.querySelectorAll("#seq-"+i+" .sign-tile")];
+tiles.forEach(x=>x.classList.remove("playing"));
+let n=start;
+const speed=+document.getElementById("speed-"+i).value;
+clearInterval(sentenceTimer);
+tiles[n]?.classList.add("playing");
+sentenceTimer=setInterval(()=>{
+tiles.forEach(x=>x.classList.remove("playing")); n++;
+if(n>=tiles.length){clearInterval(sentenceTimer);return}
+tiles[n].classList.add("playing");
+},speed);
+}
+
+function playSentence(i){toggleOpen(i);practiceOne(i,0)}
+function toggleOpen(i){document.getElementById("sp-"+i).classList.add("open")}
+
+function markSentence(i){
+if(!sentenceDone.includes(i)){
+sentenceDone.push(i);localStorage.setItem("handmadeSentenceDone",JSON.stringify(sentenceDone));
+state.xp+=15;save();toast("Sentence mastered · +15 XP");
+}else toast("Already completed");
+document.getElementById("done-"+i).classList.add("show");renderSentences();document.getElementById("sp-"+i).classList.add("open");
+document.getElementById("sentenceMissionBar").style.width=Math.min(100,sentenceDone.length*100)+"%";document.getElementById("sentenceMissionText").textContent=sentenceDone.length+" of "+sentenceData.length+" sentence lessons completed. Keep going.";
+}
+
+function speakText(text){
+if("speechSynthesis" in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(text))}
+else toast("Speech is not supported in this browser");
+}
+
+const builderWordBank=[
+"I","ME","MY","YOU","YOUR","HE","SHE","WE","THEY","THEM","THIS","THAT","THESE","THOSE",
+"WANT","NEED","LIKE","LOVE","KNOW","THINK","UNDERSTAND","REMEMBER","FORGET","HELP","ASK","ANSWER","LEARN","TEACH","PRACTICE",
+"GO","COME","SEE","LOOK","WATCH","HEAR","TELL","SHOW","GIVE","TAKE","BRING","MAKE","DO","CAN","CANNOT","SHOULD","MUST","TRY","USE","WAIT","STOP","START","FINISH",
+"YES","NO","MAYBE","PLEASE","THANK-YOU","SORRY","WELCOME","HELLO","GOODBYE","GOOD","BAD","RIGHT","WRONG","EASY","HARD","MORE","LESS","AGAIN","NOW","TODAY","TOMORROW","YESTERDAY","LATER","HERE","THERE","WHERE","WHEN","WHY","WHO","WHAT","HOW",
+"WATER","FOOD","DRINK","COFFEE","TEA","BREAKFAST","LUNCH","DINNER","HUNGRY","THIRSTY","EAT","SLEEP","BATHROOM","HOME","FAMILY","MOTHER","FATHER","BROTHER","SISTER","FRIEND","CHILD","BABY",
+"SCHOOL","CLASS","TEACHER","STUDENT","BOOK","READ","WRITE","QUESTION","TEST","WORK","OFFICE","MEETING","JOB","MONEY","SHOP","BUY","SELL","PRICE","SIZE","CLOTHES",
+"HOSPITAL","DOCTOR","NURSE","PAIN","MEDICINE","HEALTH","SICK","BETTER","EMERGENCY","POLICE","FIRE","DANGER","SAFE","CALL",
+"DOG","CAT","BIRD","FISH","HORSE","PLAY","GAME","BALL","RUN","WALK","HAPPY","SAD","ANGRY","TIRED","EXCITED","FUN",
+"CAR","BUS","TRAIN","AIRPORT","TRAVEL","TICKET","HOTEL","ROOM","ROAD","LEFT","RIGHT","UP","DOWN","NEAR","FAR","PLACE",
+"MORNING","AFTERNOON","EVENING","NIGHT","DAY","WEEK","MONTH","YEAR","ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE","TEN",
+"RED","BLUE","GREEN","YELLOW","BLACK","WHITE","BIG","SMALL","HOT","COLD","NEW","OLD","FAST","SLOW","BEAUTIFUL","IMPORTANT","READY","BUSY","FREE"
+];
+
+function renderBuilderWords(){
+const query=(document.getElementById("builderSearch")?.value||"").trim().toUpperCase();
+const words=builderWordBank.filter(w=>!query||w.includes(query));
+document.getElementById("builderCount").textContent=words.length+" words available";
+document.getElementById("builderWords").innerHTML=words.map(w=>`<button class="word-chip ${builder.includes(w)?"selected":""}" onclick="toggleBuilderWord('${w}')">${w}</button>`).join("")||'<small style="color:var(--muted)">No matching word.</small>';
+document.getElementById("builtSentence").textContent=builder.join(" ")||"—";
+document.getElementById("builderSequence").innerHTML=builder.map(signTile).join("")||'<p class="muted">Choose words above.</p>';
+}
+
+function buildWords(){renderBuilderWords()}
+
+function toggleBuilderWord(w){
+const idx=builder.indexOf(w);
+if(idx>=0) builder.splice(idx,1); else builder.push(w);
+renderBuilderWords();
+}
+
+function clearBuilder(){builder=[];renderBuilderWords()}
+
+function playBuilder(){
+const tiles=[...document.querySelectorAll("#builderSequence .sign-tile")];let n=0;
+clearInterval(sentenceTimer);if(!tiles.length)return;
+tiles.forEach(x=>x.classList.remove("playing"));tiles[0].classList.add("playing");
+sentenceTimer=setInterval(()=>{tiles.forEach(x=>x.classList.remove("playing"));n++;if(n>=tiles.length){clearInterval(sentenceTimer);return}tiles[n].classList.add("playing")},650);
+}
+
+function speakBuilt(){if(builder.length)speakText(builder.join(" "));else toast("Build a sentence first")}
+
+function startCoachVoice(){
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){toast("Voice input is not supported here");return}
+const r=new SR();r.lang="en-US";r.interimResults=false;r.maxAlternatives=1;
+toast("Listening…");
+r.onresult=e=>{document.getElementById("askInput").value=e.results[0][0].transcript;askAI()};
+r.onerror=()=>toast("Voice input stopped");
+r.start();
+}
+
+function askAI(){
+let input=document.getElementById("askInput"),v=input.value.trim();if(!v)return;
+let chat=document.getElementById("chat");
+chat.innerHTML+=`<div class="bubble user">${v.replace(/[<>]/g,"")}</div>`;
+let low=v.toLowerCase(),reply=
+low.includes("hello")?"For HELLO, practise the movement as a complete sign rather than memorising an English spelling. Repeat it slowly 5 times, then use it in a short greeting.":
+low.includes("hospital")?"Try a real-life drill: practise HOSPITAL, DOCTOR, PAIN, HELP and WHERE together, then make one short question.":
+low.includes("sentence")?"Start with short meaning-based sentences such as I WANT WATER or I NEED HELP. Record yourself, review the movement, and repeat.":
+"Try this: choose one sign, practise it slowly 5 times, then use it in a two-sign phrase. If you make a mistake, repeat the exact movement instead of rushing.";
+chat.innerHTML+=`<div class="bubble bot">${reply}</div>`;
+input.value="";chat.scrollTop=chat.scrollHeight;state.xp+=2;save()
+}
+
+updateUI();
+renderQuiz();
+renderSentences();
+buildWords();
+renderLetterHand("A");
+renderLetterHand("A");
+showPlace("Hospital");
+document.getElementById("sentenceMissionBar").style.width=Math.min(100,sentenceDone.length*100)+"%";
+document.getElementById("sentenceMissionText").textContent=sentenceDone.length+" of "+sentenceData.length+" sentence lessons completed. Keep going.";
+</script>
+</body>
+</html>
